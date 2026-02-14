@@ -1,0 +1,80 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+  direction: rtl; /* Sets Right-to-Left flow */
+}
+
+.card {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #111827;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  text-align: right;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  text-align: right;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.submitBtn {
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
+  padding: 0.85rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 1rem;
+}
+
+.submitBtn:hover {
+  background-color: #1d4ed8;
+}
+
+.footerText {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 1.5rem;
+}
