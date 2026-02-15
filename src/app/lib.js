@@ -1,1 +1,1 @@
-export const API_URL = 'https://temp-server-one.vercel.app';
+export const API_URL = 'https://temp-server-tau.vercel.app';
