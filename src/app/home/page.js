@@ -61,7 +61,7 @@ export default function Home() {
       <nav>
         <div className="nav-container">
           <a href="/" className="logo">
-            🛍️ متجر المنتجات
+            🛍️  الطيف الذهبي
           </a>
 
           <button
@@ -75,7 +75,14 @@ export default function Home() {
           
             <li>
               <a href="/dashboard" className="admin-btn">
-                لوحة التحكم
+                لوحة تحكم المنتجات
+              </a>
+              
+            </li>
+            <li>
+              <a href="/media" className="admin-btn">
+                لوحة تحكم الميديا
+
               </a>
             </li>
           </ul>
