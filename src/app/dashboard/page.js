@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [videoLink, setVideoLink] = useState("");
   const [sizes, setSizes] = useState([{ width: "", height: "", price: "" }]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -99,6 +100,7 @@ export default function Dashboard() {
     formData.append("image", image);
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("videoLink", videoLink.trim());
     formData.append("sizes", JSON.stringify(sizes));
 
     setLoading(true);
@@ -117,6 +119,7 @@ export default function Dashboard() {
         setDescription("");
         setImage(null);
         setPreview(null);
+        setVideoLink("");
         setSizes([{ width: "", height: "", price: "" }]);
         fetchProducts();
       } else {
@@ -223,6 +226,16 @@ export default function Dashboard() {
             ) : (
               <p style={{ opacity: 0.6 }}>لم يتم اختيار صورة بعد</p>
             )}
+          </div>
+
+          <div className="form-group">
+            <label>رابط فيديو يوتيوب (اختياري)</label>
+            <input
+              type="url"
+              placeholder="https://www.youtube.com/watch?v=... أو youtube.com/shorts/..."
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)}
+            />
           </div>
 
           {/* SIZES */}

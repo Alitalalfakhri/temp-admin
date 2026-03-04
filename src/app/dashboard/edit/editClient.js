@@ -38,6 +38,7 @@ export default function EditProductClient() {
   const [sizes, setSizes] = useState([]);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [videoLink, setVideoLink] = useState("");
   const [loading , setLoading] = useState(false);
 
   // -------- FETCH PRODUCT --------
@@ -53,6 +54,7 @@ export default function EditProductClient() {
         setDescription(data.description);
         setSizes(data.sizes || []);
         setPreview(data.imageLink);
+        setVideoLink(data.videoLink || "");
       } catch (error) {
         console.error("Failed to fetch product:", error);
       }
@@ -93,6 +95,7 @@ export default function EditProductClient() {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("videoLink", videoLink.trim());
     formData.append("sizes", JSON.stringify(sizes));
     if (image) formData.append("image", image);
 
@@ -226,6 +229,16 @@ export default function EditProductClient() {
             <button type="button" className="btn btn-success" onClick={addSize}>
               + إضافة حجم
             </button>
+          </div>
+
+          <div>
+            <label>رابط فيديو يوتيوب (اختياري)</label>
+            <input
+              type="url"
+              placeholder="https://www.youtube.com/watch?v=... أو youtube.com/shorts/..."
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)}
+            />
           </div>
 
           <div>
