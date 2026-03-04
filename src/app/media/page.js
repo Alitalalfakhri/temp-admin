@@ -1,39 +1,34 @@
 'use client'
-import { useState, useEffect, use } from "react"; // ✅ removed unused `use`
+import { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/media.css";
 import { API_URL } from "../lib";
 import Link from 'next/link';
-import Image from "next/image"; // ✅ was used but never imported
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Media() {
 
-
-   const router = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const res = await axios.get(`${API_URL}/api/auth/check`, {
-          withCredentials: true, // send cookie automatically
+          withCredentials: true,
         });
 
         if (!res.data.authenticated) {
-          router.push('/'); // redirect if not authenticated
+          router.push('/');
         }
       } catch (err) {
         console.log('Not authenticated', err);
-        router.push('/'); // redirect if error occurs
+        router.push('/');
       }
     };
 
     checkAuth();
   }, [router]);
-
-
-
-
 
   const [videoUrl, setVideoUrl] = useState("");
   const [videoType, setVideoType] = useState("review");
@@ -42,6 +37,7 @@ export default function Media() {
   const [company, setCompany] = useState("");
   const [thumbnail, setThumbnail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState(""); // ✅ NEW: factory video title
 
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -49,9 +45,7 @@ export default function Media() {
   const [reviewVideos, setReviewVideos] = useState([]);
   const [factoryVideos, setFactoryVideos] = useState([]);
   const [images, setImages] = useState([]);
-  const [imageTitle, setImageTitle] = useState(""); 
-
-  // ✅ missing state — was used in JSX but never declared
+  const [imageTitle, setImageTitle] = useState("");
   const [activeVideo, setActiveVideo] = useState(null);
 
   useEffect(() => {
@@ -90,7 +84,6 @@ export default function Media() {
     fetchFactory();
   }, []);
 
-  // ✅ Universal YouTube ID extractor (supports Shorts)
   const getYoutubeId = (url) => {
     try {
       const parsed = new URL(url);
@@ -113,7 +106,6 @@ export default function Media() {
     }
   };
 
-  // ✅ renamed to getThumbnail so it matches usage in JSX below
   const getThumbnail = (id) =>
     `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 
@@ -140,6 +132,11 @@ export default function Media() {
         body.company = company;
       }
 
+      // ✅ NEW: include title for factory videos
+      if (videoType === "factory") {
+        body.title = title;
+      }
+
       const res = await axios.post(`${API_URL}/api/add/video`, body, {
         withCredentials: true,
       });
@@ -150,10 +147,12 @@ export default function Media() {
       setDescription("");
       setRole("");
       setCompany("");
+      setTitle(""); // ✅ NEW: clear title after submit
     } catch (err) {
       alert(err.response?.data?.message || "حدث خطأ أثناء إضافة الفيديو");
     } finally {
       setLoading(false);
+      window.location.reload();
     }
   };
 
@@ -169,9 +168,8 @@ export default function Media() {
     try {
       const formData = new FormData();
       formData.append("image", imageFile);
-       formData.append("title", imageTitle);
+      formData.append("title", imageTitle);
 
-      // ✅ fixed: withCredentials must be inside the same options object, not a separate argument
       const res = await axios.post(`${API_URL}/api/add/image`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
@@ -185,42 +183,45 @@ export default function Media() {
       alert(err.response?.data?.message || "حدث خطأ أثناء رفع الصورة");
     } finally {
       setImageLoading(false);
+      window.location.reload();
     }
   };
 
   const handelVideoDelete = async (videoId) => {
-      try{
-        setLoading(true)
-
-        const res = await axios.delete(`${API_URL}/api/delete/video/${videoId}`, {
-          withCredentials: true,
-        });
-        alert(res.data.message)
-        setLoading(false)
-
-      }catch(err){
-        alert(err.response?.data?.message || "حدث خطأ أثناء حذف الفيديو")
-        setLoading(false)
-      }
-  }
+    try {
+      setLoading(true);
+      const res = await axios.delete(`${API_URL}/api/delete/video/${videoId}`, {
+        withCredentials: true,
+      });
+      alert(res.data.message);
+      setLoading(false);
+    } catch (err) {
+      alert(err.response?.data?.message || "حدث خطأ أثناء حذف الفيديو");
+      setLoading(false);
+      
+    }
+    finally{
+      window.location.reload();
+    }
+  };
 
   const handelImageDelete = async (imageId) => {
-    try{
-      setLoading(true)
-
+    try {
+      setLoading(true);
       const res = await axios.delete(`${API_URL}/api/delete/image/${imageId}`, {
         withCredentials: true,
       });
-      alert(res.data.message)
-      setLoading(false)
-
-    }catch(err){
-      alert(err.response?.data?.message || "حدث خطأ أثناء حذف الصورة")
-      console.log(err)
-      setLoading(false)
+      alert(res.data.message);
+      setLoading(false);
+    } catch (err) {
+      alert(err.response?.data?.message || "حدث خطأ أثناء حذف الصورة");
+      console.log(err);
+      setLoading(false);
     }
-  
-  }
+    finally{
+      window.location.reload();
+    }
+  };
 
   return (
     <div className="media-page" dir="rtl">
@@ -277,6 +278,19 @@ export default function Media() {
             </>
           )}
 
+          {/* ✅ NEW: title field shown only for factory videos */}
+          {videoType === "factory" && (
+            <>
+              <label>عنوان الفيديو</label>
+              <input
+                type="text"
+                placeholder="أدخل عنوان الفيديو"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </>
+          )}
+
           {thumbnail && (
             <div className="preview">
               <img src={thumbnail} alt="معاينة الفيديو" />
@@ -291,16 +305,14 @@ export default function Media() {
         {/* ================= REVIEW VIDEOS LIST ================= */}
         <h2>فيديوهات المراجعة</h2>
         {reviewVideos.map((review, index) => {
-          // ✅ videoId was used in JSX but never derived from the review object
           const videoId = review.videoId || getYoutubeId(review.videoUrl);
-          if (!videoId) return null; // ✅ guard: skip if no valid ID
+          if (!videoId) return null;
 
           return (
             <div className="card" key={index}>
               <div className="videoWrapper">
-                {activeVideo === index ? (
+                {activeVideo === `review-${index}` ? (
                   <>
-                    {/* ✅ added close button — was missing entirely */}
                     <button
                       className="closeBtn"
                       onClick={() => setActiveVideo(null)}
@@ -320,7 +332,7 @@ export default function Media() {
                 ) : (
                   <div
                     className="thumbnail"
-                    onClick={() => setActiveVideo(index)}
+                    onClick={() => setActiveVideo(`review-${index}`)}
                   >
                     <Image
                       src={getThumbnail(videoId)}
@@ -330,7 +342,6 @@ export default function Media() {
                       className="image"
                       priority={false}
                     />
-                    {/* ✅ improved play button from plain ▶ text to a proper styled div */}
                     <div className="playBtn">▶</div>
                   </div>
                 )}
@@ -360,10 +371,69 @@ export default function Media() {
                   {review.company ? review.company : ""}
                 </p>
               </div>
-              <button onClick={(id) => {
-                handelVideoDelete(review._id)
 
-              }}>{loading ? "جاري الحذف..." : "حذف الفيديو"}</button>
+              <button onClick={() => handelVideoDelete(review._id)}>
+                {loading ? "جاري الحذف..." : "حذف الفيديو"}
+              </button>
+            </div>
+          );
+        })}
+
+        {/* ================= FACTORY VIDEOS LIST ================= */}
+        <h2>فيديوهات المكتبة / المعمل</h2>
+        {factoryVideos.map((video, index) => {
+          const videoId = video.videoId || getYoutubeId(video.videoUrl);
+          if (!videoId) return null;
+
+          return (
+            <div className="card" key={index}>
+              <div className="videoWrapper">
+                {activeVideo === `factory-${index}` ? (
+                  <>
+                    <button
+                      className="closeBtn"
+                      onClick={() => setActiveVideo(null)}
+                      aria-label="إغلاق الفيديو"
+                    >
+                      ✕
+                    </button>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+                      allow="autoplay; encrypted-media; fullscreen"
+                      allowFullScreen
+                      loading="lazy"
+                      className="iframe"
+                      title={video.title || "فيديو"}
+                    />
+                  </>
+                ) : (
+                  <div
+                    className="thumbnail"
+                    onClick={() => setActiveVideo(`factory-${index}`)}
+                  >
+                    <Image
+                      src={getThumbnail(videoId)}
+                      alt={video.title || "فيديو"}
+                      fill
+                      sizes="(max-width:768px) 100vw, 33vw"
+                      className="image"
+                      priority={false}
+                    />
+                    <div className="playBtn">▶</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="cardContent">
+                {/* ✅ NEW: display factory video title */}
+                {video.title && (
+                  <p className="meta"><strong>{video.title}</strong></p>
+                )}
+              </div>
+
+              <button onClick={() => handelVideoDelete(video._id)}>
+                {loading ? "جاري الحذف..." : "حذف الفيديو"}
+              </button>
             </div>
           );
         })}
@@ -382,13 +452,12 @@ export default function Media() {
             required
           />
           <label>عنوان الصورة</label>
-        <input
-    type="text"
-    placeholder="أدخل عنوان الصورة"
-    value={imageTitle}
-    onChange={(e) => setImageTitle(e.target.value)}
-  />
-          
+          <input
+            type="text"
+            placeholder="أدخل عنوان الصورة"
+            value={imageTitle}
+            onChange={(e) => setImageTitle(e.target.value)}
+          />
 
           {imagePreview && (
             <div className="preview">
@@ -401,27 +470,24 @@ export default function Media() {
           </button>
         </form>
 
-        {images.map((image , i ) => {
-            return(
-              <div className="iamges-map" key={i}>
-                <div>
-
-                
-                  <Image 
-                     src={image.imageUrl}
-                      alt=''
-                      
-                      width={50}
-                      height={50}
-                      className="image"
-                      priority={false}
-                  />
-                  <button onClick={() => {
-                    handelImageDelete(image._id)
-                  }}>{loading ? "جاري الحذف..." : "حذف الصورة"}</button>
-                </div>
+        {images.map((image, i) => {
+          return (
+            <div className="iamges-map" key={i}>
+              <div>
+                <Image
+                  src={image.imageUrl}
+                  alt={image.title || ''}
+                  width={50}
+                  height={50}
+                  className="image"
+                  priority={false}
+                />
+                <button onClick={() => handelImageDelete(image._id)}>
+                  {loading ? "جاري الحذف..." : "حذف الصورة"}
+                </button>
               </div>
-            )
+            </div>
+          );
         })}
       </section>
     </div>
