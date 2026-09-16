@@ -471,11 +471,15 @@ export default function Media() {
         </form>
 
         {images.map((image, i) => {
+          const imageSrc = image.imageUrl.startsWith("http")
+            ? image.imageUrl
+            : `${API_URL}${image.imageUrl}`;
+
           return (
             <div className="iamges-map" key={i}>
               <div>
-                <Image
-                  src={image.imageUrl}
+                <img
+                  src={imageSrc}
                   alt={image.title || ''}
                   width={50}
                   height={50}
